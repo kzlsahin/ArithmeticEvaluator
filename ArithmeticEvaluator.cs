@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 // Compiler version 4.0, .NET Framework 4.5
 
 
-namespace Calculator
+namespace CalculatorApp
 {
     public class ArithmeticEvaluator
     {
@@ -13,29 +13,37 @@ namespace Calculator
         static char[] Operators { get; } =
           {'+', '-', '/',  '*', '^' };
 
-        public bool hasParanthesis(string expr)
+        public bool HasParanthesis(string expr)
         {
-            return expr.StartsWith('(') &&
-            expr.EndsWith(')');
+            expr = expr.Trim();
+            return expr.StartsWith("(") && expr.EndsWith(")");
         }
 
-        public bool hasOperators(string expr)
+        public bool HasOperators(string expr)
         {
-            Regex rx = new(@"[*/^+-]");
+            Regex rx = new Regex(@"[*/^+-]");
             return rx.IsMatch(expr);
         }
         public bool IsExpr(string expr)
         {
-            return hasParanthesis(expr) || hasOperators(expr);
+            return HasParanthesis(expr) || HasOperators(expr);
         }
 
         public double Eval(string expr)
         {
 
-            if (hasParanthesis(expr))
+            expr = expr.Trim();
+
+            if (HasParanthesis(expr))
             {
                 expr = expr.Substring(1, expr.Length - 2);
                 return Eval(expr);
+            }
+
+            foreach(Match match in Regex.Matches(expr, @"[(].+[)]"))
+            {
+                string replacedExpression = Eval(match.Value).ToString();
+                expr = expr.Replace(match.Value, replacedExpression);
             }
 
             if (expr.Contains('+'))
@@ -73,12 +81,11 @@ namespace Calculator
             return 0;
         }
 
-        public double Operate(string[] args,
-         char OpSymbol)
+        public double Operate(string[] args, char OpSymbol)
         {
             double res = 0;
             double x;
-            
+
             if (OpSymbol == '+')
             {
                 res = GetDoubleValue(args[0]);
