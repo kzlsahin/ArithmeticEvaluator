@@ -1,67 +1,155 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+// Compiler version 4.0, .NET Framework 4.5
 
-namespace Calculator
+
+namespace CalculatorApp
 {
-    public class Program
+    public class ArithmeticEvaluator
     {
-        public static ArithmeticEvaluator Aritma = new ArithmeticEvaluator();
-        public static void Main()
+
+        static char[] Operators { get; } =
+          {'+', '-', '/',  '*', '^' };
+
+        public bool HasParanthesis(string expr)
         {
-            Console.WriteLine("started");
-
-            string[] testExpressions_1 = { "24 + 3", "0 + 0", "0 + 1", "+ 2", "2 + ", "5 - 2", "2 - 8", "5 + 11 - 3", "2*5 + 3 - 9", "-10 + 5", "5 - 6 + 10 / 2", "4 - 2 - 5", "4 - 4 - 3" };
-            double[] testResults_1 = { 24 + 3, 0 + 0, 0 + 1, 2, 2, 5 - 2, 2 - 8, 5 + 11 - 3, 2*5 + 3 - 9, -10 + 5, 5 - 6 + 5, 4 - 2 - 5, 4 - 4 - 3 };
-            string[] testExpressions_2 = { "2 * 3", "1 * 2", "* 2", "4 / 2", "5 * 3 * 4", "0 * 2 ", "0*2", "1*4", "5*5", "5^2", "5^0", "2/2/2"};
-            double[] testResults_2 = { 6, 2, 2, 2, 60, 0 , 0, 4, 25, 25, 1, 0.5 };
-
-            int countFailed = 0;
-
-            for (int i = 0; i < testExpressions_1.Length; i++)
-            {
-                if(! TestAritma(testExpressions_1[i], testResults_1[i]) ) countFailed++;
-            }
-            for (int i = 0; i < testExpressions_2.Length; i++)
-            {
-                if(! TestAritma(testExpressions_2[i], testResults_2[i]) )countFailed++;
-            }
-
-            Console.WriteLine($"number of failed tests : {countFailed}");
-            //Console.Read();
+            expr = expr.Trim();
+            return expr.StartsWith("(") && expr.EndsWith(")");
         }
-       
 
-    public static bool TestAritma(string expr, double expected)
+        public bool HasOperators(string expr)
         {
-            double result = Aritma.Eval(expr);
-            bool res = expected == result;
-            Console.Write("test expr: " + expr);
-            Console.Write("   expected: " + expected);
-            Console.WriteLine($"  result: {result}");
+            Regex rx = new Regex(@"[*/^+-]");
+            return rx.IsMatch(expr);
+        }
+        public bool IsExpr(string expr)
+        {
+            return HasParanthesis(expr) || HasOperators(expr);
+        }
 
-            if (res)
+        public double Eval(string expr)
+        {
+
+            expr = expr.Trim();
+
+            if (HasParanthesis(expr))
             {
-                Console.WriteLine($"   Passed");
-            } else
+                expr = expr.Substring(1, expr.Length - 2);
+                return Eval(expr);
+            }
+
+            foreach(Match match in Regex.Matches(expr, @"[(].+[)]"))
             {
-                Console.WriteLine($"   Failed");
+                string replacedExpression = Eval(match.Value).ToString();
+                expr = expr.Replace(match.Value, replacedExpression);
+            }
+
+            if (expr.Contains('+'))
+            {
+                string[] expressions = expr.Split('+');
+                return Operate(expressions, '+');
+            }
+
+            if (expr.Contains('-'))
+            {
+                string[] expressions = expr.Split('-');
+                return Operate(expressions, '-');
+            }
+
+            if (expr.Contains('*'))
+            {
+                string[] expressions = expr.Split('*');
+                return Operate(expressions, '*');
+            }
+
+            if (expr.Contains('/'))
+            {
+                string[] expressions = expr.Split('/');
+                return Operate(expressions, '/');
+            }
+
+            if (expr.Contains('^'))
+            {
+                string[] expressions = expr.Split('^');
+                return Operate(expressions, '^');
+            }
+
+            //split string with operators 
+            //and call operate() according
+            return 0;
+        }
+
+        public double Operate(string[] args, char OpSymbol)
+        {
+            double res = 0;
+            double x;
+
+            if (OpSymbol == '+')
+            {
+                res = GetDoubleValue(args[0]);
+                for (int i = 1; i < args.Length; i++)
+                {
+                    x = GetDoubleValue(args[i]);
+                    res += x;
+                }
+                return res;
+            }
+            if (OpSymbol == '-')
+            {
+                res = GetDoubleValue(args[0]);
+                for (int i = 1; i < args.Length; i++)
+                {
+                    x = GetDoubleValue(args[i]);
+                    res -= x;
+                }
+                return res;
+            }
+
+            if (OpSymbol == '*')
+            {
+                res = GetDoubleValue(args[0], "1");
+                for (int i = 1; i < args.Length; i++)
+                {
+                    x = GetDoubleValue(args[i], "1");
+                    res *= x;
+                }
+                return res;
+            }
+            if (OpSymbol == '/')
+            {
+                res = GetDoubleValue(args[0], "1");
+                for (int i = 1; i < args.Length; i++)
+                {
+                    x = GetDoubleValue(args[i], "1");
+                    res /= x;
+                }
+                return res;
+            }
+            if (OpSymbol == '^')
+            {
+                res = GetDoubleValue(args[0], "1");
+                for (int i = 1; i < args.Length; i++)
+                {
+                    x = GetDoubleValue(args[i], "1");
+                    res = Math.Pow(res, x);
+                }
+                return res;
             }
             return res;
         }
 
-        public struct TestItem
+        public double GetDoubleValue(string a, string baseValue = "0")
         {
-            public int Id { get; init; }
-            public string Expr { get; init; }
-            public double Expected { get; init; }
-            public TestItem(int i, string expr, double expected)
+            double res = 0;
+            a = a.Trim();
+            if (a == string.Empty || a == null)
             {
-                Id = i;
-                Expr = expr;
-                Expected = expected;
+                a = baseValue;
             }
+            res = IsExpr(a) ? Eval(a) : double.Parse(a);
+            return res;
         }
-    }   
+    }
 }
