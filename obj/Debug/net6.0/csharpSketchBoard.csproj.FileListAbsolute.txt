@@ -1,0 +1,15 @@
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\csharpSketchBoard.csproj.AssemblyReference.cache
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\csharpSketchBoard.GeneratedMSBuildEditorConfig.editorconfig
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\csharpSketchBoard.AssemblyInfoInputs.cache
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\csharpSketchBoard.AssemblyInfo.cs
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\csharpSketchBoard.csproj.CoreCompileInputs.cache
+D:\mustafa_workspace\dotnet\csharpSketchBoard\bin\Debug\net6.0\csharpSketchBoard.exe
+D:\mustafa_workspace\dotnet\csharpSketchBoard\bin\Debug\net6.0\csharpSketchBoard.deps.json
+D:\mustafa_workspace\dotnet\csharpSketchBoard\bin\Debug\net6.0\csharpSketchBoard.runtimeconfig.json
+D:\mustafa_workspace\dotnet\csharpSketchBoard\bin\Debug\net6.0\csharpSketchBoard.dll
+D:\mustafa_workspace\dotnet\csharpSketchBoard\bin\Debug\net6.0\csharpSketchBoard.pdb
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\csharpSketchBoard.dll
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\refint\csharpSketchBoard.dll
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\csharpSketchBoard.pdb
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\csharpSketchBoard.genruntimeconfig.cache
+D:\mustafa_workspace\dotnet\csharpSketchBoard\obj\Debug\net6.0\ref\csharpSketchBoard.dll
