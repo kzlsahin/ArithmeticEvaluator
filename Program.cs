@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 // Compiler version 4.0, .NET Framework 4.5
 
 
-namespace CalculatorApp
+namespace ArithmeticEvaluator
 {
     public class Program
     {
