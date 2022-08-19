@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,18 +9,21 @@ namespace ArithmeticEvaluator
 {
     public class Evaluator
     {
-        public Func<string, bool> WrappedInParanthesis = ArithmeticExpression.WrappedInParanthesis;
-        public Func<string, bool> HasOperators = ArithmeticExpression.HasOperators;
-        public Func<string, bool> IsExpr = ArithmeticExpression.IsExpr;
+        public static Func<string, bool> WrappedInParanthesis = ArithmeticExpression.WrappedInParanthesis;
+        public static Func<string, bool> HasOperators = ArithmeticExpression.HasOperators;
+        public static Func<string, bool> IsExpr = ArithmeticExpression.IsExpr;
 
         public class Operators
         {
             public static char[] UnaryOperators { get; } = { '√' };
             public static char[] BinaryOperators { get; } = { '+', '-', '/', '*', '^' };
 
+            public static string[] functionOperators { get; } = { "cos", "sin", "tan", "cot", "log", "ln" };
+
             public static bool IsUnaryOperator(char x) => UnaryOperators.Contains(x);
             public static bool IsBinaryOperator(char x) => BinaryOperators.Contains(x);
-            public static bool IsOperator(string x) => IsUnaryOperator(x) || IsBinaryOperator(x);
+            public static bool IsFuncOperator(string x) => functionOperators.Contains( x.Trim() );
+            public static bool IsOperator(string x) => IsUnaryOperator(x) || IsBinaryOperator(x) || IsFuncOperator(x);
             public static bool IsOperator(char x) => IsUnaryOperator(x) || IsBinaryOperator(x);
             public static bool IsUnaryOperator(string x)
             {
@@ -37,13 +40,13 @@ namespace ArithmeticEvaluator
 
         }
 
-        public ArithmaticExpressionvalidationResult ValidateExpression(string expr)
+        public static ArithmaticExpressionvalidationResult ValidateExpression(string expr)
         {
             var res = new ArithmaticExpressionvalidationResult(AnyOpenParenthesis(expr), AnyConsecutiveOperator(expr));
             return res;
         }
 
-        public bool AnyOpenParenthesis(string expr)
+        public static bool AnyOpenParenthesis(string expr)
         {
             int openParenthesis = 0;
             foreach (char c in expr)
@@ -57,11 +60,10 @@ namespace ArithmeticEvaluator
                     openParenthesis--;
                 }
             }
-
             return openParenthesis != 0;
         }
 
-        public bool AnyConsecutiveOperator(string expr)
+        public static bool AnyConsecutiveOperator(string expr)
         {
             char prevC = ' ';
             foreach (char c in expr)
@@ -84,12 +86,12 @@ namespace ArithmeticEvaluator
             return false;
         }
 
-        public double Eval(string expr, double ifNullOrEmptyReturn = 0)
+        public static double Eval(string expr, double ifNullOrEmptyReturn = 0)
         {
             string defaultValue = ifNullOrEmptyReturn.ToString();
             return GetDoubleValue(expr, defaultValue);
         }
-        private double GetDoubleValue(string a, string baseValue = "0")
+        private static double GetDoubleValue(string a, string baseValue = "0")
         {
             double res = 0;
             a = a.Trim();
@@ -101,7 +103,7 @@ namespace ArithmeticEvaluator
             res = IsExpr(a) ? EvalExpression(a) : double.Parse(a);
             return res;
         }
-        private double EvalExpression(string expr)
+        private static double EvalExpression(string expr)
         {
             expr = expr.Trim();
             // if the whole  expression is inside a single parathesis block
@@ -134,8 +136,6 @@ namespace ArithmeticEvaluator
                 string replacedExpression = match.Value.Replace("√", "*√");
                 expr = expr.Replace(match.Value, replacedExpression);
             }
-
-
             // evaluate sub parathesis blocks first
             foreach (String parantblock in GetParanthesisBlocks(expr))
             {
@@ -144,13 +144,11 @@ namespace ArithmeticEvaluator
             }
 
             //Coution evaluator reaches here after all the sub paranthesis are evaluated before
-
             if (expr.Contains('+'))
             {
                 string[] expressions = expr.Split('+');
                 return Operate(expressions, '+');
             }
-
             if (expr.Contains('-'))
             {
                 string[] expressions = expr.Split('-');
@@ -188,16 +186,15 @@ namespace ArithmeticEvaluator
             {
                 throw new Exception("Arithmetic Expression couldn't be solved");
             }
-
         }
 
-        private double CalculateSqrt(string value)
+        private static double CalculateSqrt(string value)
         {
             double val = GetDoubleValue(value);
             return Math.Sqrt(val);
         }
 
-        private double Operate(string[] args, char OpSymbol)
+        private static double Operate(string[] args, char OpSymbol)
         {
             double res = 0;
             double x;
@@ -265,7 +262,6 @@ namespace ArithmeticEvaluator
             int counter = 0;
             var indexStack = new Stack<int[]>();
             bool isOpenBlock = false;
-
             {
                 int index = 0;
                 int lengthOfBlock = 0;
@@ -283,17 +279,14 @@ namespace ArithmeticEvaluator
                         }
                         counter++;
                     }
-
                     if (c == ')')
                     {
                         counter--;
-
                     }
                     //if counter == 0 means that there is no more open paranthesis
                     // that means the first paranthesis is closed
                     if (isOpenBlock)
                     {
-
                         if (counter == 0)
                         {
                             int[] lastIndexes = indexStack.Pop();
@@ -349,18 +342,14 @@ namespace ArithmeticEvaluator
             {
                 this.Expression = expr;
             }
-
-
             static ArithmeticExpression getExpression(string expr)
             {
                 return new ArithmeticExpression(expr);
             }
-
             public static bool IsExpr(string expr)
             {
                 return WrappedInParanthesis(expr) || HasOperators(expr);
             }
-
             public static bool WrappedInParanthesis(string expr)
             {
                 expr = expr.Trim();
@@ -382,7 +371,6 @@ namespace ArithmeticEvaluator
                     if (c == ')')
                     {
                         counter--;
-
                     }
                     if (c == '(')
                     {
@@ -396,7 +384,6 @@ namespace ArithmeticEvaluator
                     }
                 }
                 return true;
-
             }
 
             public static bool HasOperators(string expr)
@@ -410,8 +397,14 @@ namespace ArithmeticEvaluator
                 }
                 return false;
             }
+        }
 
-
+        class TrigonometryCalculator
+        {
+            public static string Consine(string x) => (Math.Cos(GetDoubleValue(x))).ToString();
+            public static string Sine(string x) => (Math.Sin(GetDoubleValue(x))).ToString();
+            public static string Tan(string x) => (Math.Tan(GetDoubleValue(x))).ToString();
+            public static string Cot(string x) => (1 / Math.Tan(GetDoubleValue(x))).ToString();
         }
 
     }
